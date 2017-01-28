@@ -1,0 +1,15 @@
+#Comments with #
+#Commands with >
+#Messages run until a new command
+#Ignore line (works like a commend) with --
+#Ignore line-breaks(&)
+# >Begin and >End are necessary
+
+>Begin
+
+>Message Start
+I am Jagaros &
+>Message Summon
+Hi
+
+>End
