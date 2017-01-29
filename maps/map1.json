@@ -76,8 +76,8 @@
  "orientation":"orthogonal",
  "properties":
     {
-     "corpses":2,
-     "energy":50,
+     "corpses":200,
+     "energy":50000,
      "summons":"Skeleton,Soldier"
     },
  "propertytypes":

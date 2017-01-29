@@ -9,6 +9,8 @@ require_relative 'draworder'
 require_relative 'timer'
 require_relative 'textsystem'
 
+require_relative 'spacehash'
+
 UnitWave = Struct.new(:unit_id, :length)
 
 
@@ -105,7 +107,7 @@ class WaveSystem
 end
 
 class World
-    attr_reader :tile_sx, :tile_sy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :unit_texture, :units, :camerax, :cameray, :selected
+    attr_reader :tile_sx, :tile_sy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
 
     DEAD_LAND = 1
     TEXT_RECT_COLOR = Gosu::Color.new(192, 96, 64, 64)
@@ -226,7 +228,10 @@ class World
 
                 @units.each { |u| u.draw }
                 @missiles.each { |m| m.draw }
+                #@space_hash.draw
             }
+
+            
 
             if @show_messages && @current_text_image != nil
                 gw = @scene.game.width*0.1
@@ -362,6 +367,8 @@ class World
 
         @selected = Set.new()
         @textsystem = TextSystem.new()
+
+        @space_hash = SpaceHash.new( @bounds, SpaceHash::CELL_SIZE, SpaceHash::CELL_SIZE )
 
         @show_messages = false
 
@@ -504,6 +511,8 @@ class World
         @energy_timer = SimpleTimer.new(1.0, true)
 
         @wave_systems = nil
+
+        @space_hash = nil
         #===
 
         @loaded = false

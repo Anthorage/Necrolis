@@ -18,6 +18,71 @@ class Unit < CollisionEntity
         return @order == MOVE
     end
 
+    def get_hashpoints
+        sx = (@rect.x/@home.space_hash.tile_x).to_i
+        sy = (@rect.y/@home.space_hash.tile_y).to_i
+
+        fx = ((@rect.x+@rect.w)/@home.space_hash.tile_x).to_i
+        fy = ((@rect.y+@rect.h)/@home.space_hash.tile_y).to_i
+
+        return [ [sx,sy], [fx,sy], [fx,fy], [sx,fy] ]
+    end
+
+    def mark_hash_pos
+        sx = (@rect.x/@home.space_hash.tile_x).to_i
+        sy = (@rect.y/@home.space_hash.tile_y).to_i
+
+        fx = ((@rect.x+@rect.w)/@home.space_hash.tile_x).to_i
+        fy = ((@rect.y+@rect.h)/@home.space_hash.tile_y).to_i
+
+        (sx..fx).each do |px|
+            (sy..fy).each do |py|
+                @home.space_hash.add_grid(px, py, self)
+            end
+        end
+
+    end
+
+    def clear_hash_pos
+        sx = (@rect.x/@home.space_hash.tile_x).to_i
+        sy = (@rect.y/@home.space_hash.tile_y).to_i
+
+        fx = ((@rect.x+@rect.w)/@home.space_hash.tile_x).to_i
+        fy = ((@rect.y+@rect.h)/@home.space_hash.tile_y).to_i
+
+        (sx..fx).each do |px|
+            (sy..fy).each do |py|
+                @home.space_hash.rem_grid(px, py, self)
+            end
+        end
+    end
+
+
+    def move_pos(x, y)
+        super x, y
+
+        prev_hashpoint = @hash_points
+        @hash_points = self.get_hashpoints
+
+        if @hash_points[0][0] != prev_hashpoint[0][0] || @hash_points[0][1] != prev_hashpoint[0][1] || 
+            @hash_points[2][0] != prev_hashpoint[2][0] || @hash_points[2][1] != prev_hashpoint[2][1]
+
+            (prev_hashpoint[0][0]..prev_hashpoint[1][0]).each do |hpx|
+                (prev_hashpoint[0][1]..prev_hashpoint[3][1]).each do |hpy|
+                    @home.space_hash.rem_grid(hpx, hpy, self)
+                end
+            end
+
+            (@hash_points[0][0]..@hash_points[1][0]).each do |hpx|
+                (@hash_points[0][1]..@hash_points[3][1]).each do |hpy|
+                    @home.space_hash.add_grid(hpx, hpy, self)
+                end
+            end
+
+        end
+
+    end
+
     def movement(dt)
         angle = Gosu::angle(@x, @y, @nodex, @nodey) #Math.atan2( y-@y, x-@x )
 
@@ -45,14 +110,28 @@ class Unit < CollisionEntity
         min = nil
         mindis = 0
 
-        @home.units.each do |un|
-            if @player.is_enemy?(un.player) then
-                dis = (un.x - self.x) * (un.x - self.x)  + (un.y - self.y) * (un.y - self.y) #self.sqdist(un) 
-                if dis < @sight_range_squared
+        enemies = Set.new()
 
-                    if min == nil || dis < mindis
-                        min = un
-                        mindis = dis
+        range_cell = @stats.sight_range
+
+        sx = ((@rect.x-range_cell)/@home.space_hash.tile_x).to_i
+        sy = ((@rect.y-range_cell)/@home.space_hash.tile_y).to_i
+
+        fx = ((@rect.x+@rect.w+range_cell)/@home.space_hash.tile_x).to_i
+        fy = ((@rect.y+@rect.h+range_cell)/@home.space_hash.tile_y).to_i
+
+        (sx..fx).each do |hpx|
+            (sy..fy).each do |hpy|
+                @home.space_hash.get_grid(hpx, hpy).each do |un|
+                    if @player.is_enemy?(un.player) && !enemies.include?(un)
+                        enemies.add?(un)
+                        dis = (un.x - self.x) * (un.x - self.x)  + (un.y - self.y) * (un.y - self.y) #self.sqdist(un) 
+                        if dis < @sight_range_squared
+                            if min == nil || dis < mindis
+                                min = un
+                                mindis = dis
+                            end
+                        end
                     end
                 end
             end
@@ -72,6 +151,7 @@ class Unit < CollisionEntity
         @show_rect = false
         killer.player.energy += (@kind.energy_cost/2).to_i
         killer.player.corpses += @kind.corpses_cost
+        self.clear_hash_pos
     end
 
     def is_dead?
@@ -144,17 +224,22 @@ class Unit < CollisionEntity
         fx = @x
         fy = @y
 
-        collided = self.collides_group?(@home.units)
-
         c_cant = 0
         p_ang = 0
 
-        collided.each do |u|
-            if @player.pid == u.player.pid
-                ang = ( Gosu::angle(@x, @y, u.x, u.y) + 90 ) * DEGTORAD
-                c_cant += 1
-                px += -force*dt*Math.cos(ang)
-                py += -force*dt*Math.sin(ang)
+        collided = Set.new()
+
+        (@hash_points[0][0]..@hash_points[1][0]).each do |hpx|
+            (@hash_points[0][1]..@hash_points[3][1]).each do |hpy|
+                @home.space_hash.get_grid(hpx, hpy).each do |tar|
+                    if @player.pid == tar.player.pid && !collided.include?(tar) && tar.collides_with?(self)  && tar != self
+                        collided.add?(tar)
+                        ang = ( Gosu::angle(@x, @y, tar.x, tar.y) + 90 ) * DEGTORAD
+                        c_cant += 1
+                        px += -force*dt*Math.cos(ang)
+                        py += -force*dt*Math.sin(ang)
+                    end
+                end
             end
         end
 
@@ -292,6 +377,9 @@ class Unit < CollisionEntity
 
         @show_rect = playerid != PlayerMaster::P1
 
+
+        @hash_points = self.get_hashpoints
+        self.mark_hash_pos()
         self.set_order(STAY)
     end
 
