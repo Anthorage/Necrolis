@@ -33,7 +33,7 @@
                  "name":"hstart",
                  "properties":
                     {
-                     "w1":"Soldier:1",
+                     "w1":"Archer:1",
                      "w2":"Soldier:2",
                      "wave_time":30,
                      "waves":2

@@ -109,7 +109,7 @@ class WaveSystem
 end
 
 class World
-    attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
+    attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
 
     DEAD_LAND = 1
     TEXT_RECT_COLOR = Gosu::Color.new(192, 96, 64, 64)
@@ -217,7 +217,12 @@ class World
             @wave_systems.each { |ws| ws.update(dt) }
 
             @units.delete_if do |u|
-                u.update(dt) if !u.is_dead?
+                u.update(dt) unless u.is_dead?
+                u.is_dead?
+            end
+
+            @missiles.delete_if do |u|
+                u.update(dt) unless u.is_dead?
                 u.is_dead?
             end
         end
@@ -250,6 +255,9 @@ class World
         @unit_texture = nil
         @regions = nil
         @wave_systems = nil
+        @missile_texture = nil
+        @world_texture = nil
+        @space_hash = nil
 
         @victory = false
         @defeat = false
@@ -295,6 +303,13 @@ class World
         @units.push( un )
 
         return un
+    end
+
+    def create_missile_xy(x1,y1,x2,y2,gid,owner,damage)
+        mis = Missile.create_xy(x1,y1,x2,y2,gid,owner,damage,self)
+        @missiles.push(mis)
+
+        return mis
     end
 
     def summonable_pos?(x,y)
@@ -384,9 +399,13 @@ class World
 
         gph = File.expand_path("graphics/", Dir.pwd)
         utl = File.expand_path("units.png", gph)
+        mtl = File.expand_path("missiles.png", gph)
+
         @tileset = Gosu::Image.load_tiles( File.expand_path("tileset.png", gph), @graph_sx, @graph_sy, :retro=>true )
 
         @unit_texture = Gosu::Image.load_tiles(utl, @graph_sx, @graph_sy, :retro=>true )
+
+        @missile_texture = Gosu::Image.load_tiles(mtl, @graph_sx, @graph_sy, :retro=>true)
 
         @unit_image_width = Gosu::Image.new( utl ).width
 
@@ -474,6 +493,7 @@ class World
         @tileset = nil
         @unit_texture = nil
         @world_texture = nil
+        @missile_texture = nil
 
         @scene = scene
 

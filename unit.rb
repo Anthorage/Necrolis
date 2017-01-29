@@ -163,12 +163,16 @@ class Unit < CollisionEntity
     end
 
     def use_armor?(who)
-        false
+        if who.kind.id == UnitMaster::SKELETON && self.kind.id == UnitMaster::ARCHER
+            return true
+        end
+
+        return false
     end
 
     def damage_target(who, dmg)
 
-        if use_armor?(who)
+        if self.use_armor?(who)
             who.stats.armor -= dmg
             dmg = who.stats.armor < 0 ? -who.stats.armor : 0
         end
@@ -193,7 +197,12 @@ class Unit < CollisionEntity
 
                 if @attack_time <= 0 then
                     @attack_time = @stats.attack_speed
-                    self.damage_target( @target, @stats.damage )
+
+                    if @stats.missile == nil
+                        self.damage_target( @target, @stats.damage )
+                    else
+                        @home.create_missile_xy(@x, @y, @target.x, @target.y, @stats.missile.graphid, self, @stats.damage)
+                    end
                 end
             else
                 self.travel(@target.x, @target.y, @acquire)
@@ -373,6 +382,7 @@ class Unit < CollisionEntity
         @stats.move_speed *= home.tile_prom
         @stats.sight_range *= home.tile_prom
         @stats.range *= home.tile_prom
+        @stats.missile = @stats.missile != nil ? MissileMaster.get.bring(@stats.missile) : nil
 
         @sight_range_squared = @stats.sight_range*@stats.sight_range
         @range_squared = @stats.range*@stats.range
