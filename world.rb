@@ -11,6 +11,8 @@ require_relative 'textsystem'
 
 require_relative 'spacehash'
 
+require_relative 'missile'
+
 UnitWave = Struct.new(:unit_id, :length)
 
 
@@ -107,7 +109,7 @@ class WaveSystem
 end
 
 class World
-    attr_reader :tile_sx, :tile_sy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
+    attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
 
     DEAD_LAND = 1
     TEXT_RECT_COLOR = Gosu::Color.new(192, 96, 64, 64)
@@ -501,6 +503,9 @@ class World
 
         @tile_sx = @graph_sx*@zoom_x
         @tile_sy = @graph_sy*@zoom_y
+
+        @tile_sqx = @tile_sx*@tile_sx
+        @tile_sqy = @tile_sy*@tile_sy
 
         @unit_image_width = 1
 

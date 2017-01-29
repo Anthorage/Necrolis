@@ -35,15 +35,13 @@
                     {
                      "w1":"Soldier:1",
                      "w2":"Soldier:2",
-                     "w3":"Knight:1",
                      "wave_time":30,
-                     "waves":3
+                     "waves":2
                     },
                  "propertytypes":
                     {
                      "w1":"string",
                      "w2":"string",
-                     "w3":"string",
                      "wave_time":"float",
                      "waves":"int"
                     },
@@ -90,15 +88,15 @@
  "tileheight":4,
  "tilesets":[
         {
-         "columns":9,
+         "columns":18,
          "firstgid":1,
          "image":"..\/graphics\/tileset.png",
-         "imageheight":4,
-         "imagewidth":36,
+         "imageheight":8,
+         "imagewidth":72,
          "margin":0,
          "name":"tileset",
          "spacing":0,
-         "tilecount":9,
+         "tilecount":36,
          "tileheight":4,
          "tilewidth":4
         }],

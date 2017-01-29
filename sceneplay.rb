@@ -100,6 +100,7 @@ class ScenePlay < Scene
         super "PLAY", game
 
         PlayerMaster.get.setup()
+        MissileMaster.get.setup()
         UnitMaster.get.setup()
         
         @world = World1.new("Coward's Reign", "map1.json", "map1.txt", self)

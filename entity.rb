@@ -25,6 +25,8 @@ class Entity
     end
 
     def set_pos(x,y)
+        #@x = x
+        #@y = y
         self.move_pos(x-@x,y-@y)
     end
 
@@ -43,7 +45,7 @@ class Entity
 
         norm = Math.sqrt( dx*dx+dy*dy )
 
-        if norm < speed
+        if norm < speed || norm < 1
             self.set_pos(x,y)
             return true
         end

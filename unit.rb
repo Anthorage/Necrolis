@@ -267,7 +267,11 @@ class Unit < CollisionEntity
     end
 
     def main_travel
-        if @hasmain
+        dx = (@mainx-@x)
+        dy = (@mainy-@y)
+        sqds = dx*dx+dy*dy
+
+        if @hasmain && sqds > @home.tile_sqx
             self.travel(@mainx, @mainy)
         end
     end
@@ -338,7 +342,7 @@ class Unit < CollisionEntity
 
 
     def initialize(x,y,gid,playerid,properties,home)
-        super x, y, 5, home.tile_sx, home.tile_sy
+        super x, y, ZOrder::UNITS, home.tile_sx, home.tile_sy
 
         @home = home
         @id = gid
