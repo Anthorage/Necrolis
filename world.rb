@@ -65,6 +65,12 @@ class WaveSystem
         @start_timer.pause()
     end
 
+    def resume!
+        @timer.pause(false)
+        @unit_timer.pause(false)
+        @start_timer.pause(false)
+    end
+
     def summon!
         if @wid < @waves.size
             @timer.pause(false)
@@ -242,8 +248,8 @@ class World
 
             if @show_messages && @current_text_image != nil
                 gw = @scene.game.width*0.1
-                Gosu::draw_rect(gw-4, @scene.game.height-@current_text_image.height*2, @scene.game.width-gw*2+8, @current_text_image.height*2, TEXT_RECT_COLOR, ZOrder::TEXTS)
-                @current_text_image.draw_rot(gw, @scene.game.height, ZOrder::TEXTS, 0, 0, 1, 2, 2)
+                Gosu::draw_rect(gw-4, @scene.game.height-@current_text_image.height*@textsystem.scale, @scene.game.width-gw*@textsystem.scale*2+8, @current_text_image.height*@textsystem.scale, TEXT_RECT_COLOR, ZOrder::TEXTS)
+                @current_text_image.draw_rot(gw, @scene.game.height, ZOrder::TEXTS, 0, 0, 1, @textsystem.scale, @textsystem.scale)
             end
         end
     end
@@ -411,7 +417,7 @@ class World
 
         world_properties = data.fetch('properties', {})
 
-        PlayerMaster.PLAYER_1.energy = world_properties.fetch( 'energy', 0 )
+        PlayerMaster.PLAYER_1.energy = world_properties.fetch( 'energy', self.energy_base )
         PlayerMaster.PLAYER_1.corpses = world_properties.fetch( 'corpses', 0 )
 
         @summon_list = []

@@ -33,7 +33,7 @@
                  "name":"hstart",
                  "properties":
                     {
-                     "w1":"Archer:1",
+                     "w1":"Soldier:1",
                      "w2":"Soldier:2",
                      "wave_time":30,
                      "waves":2
@@ -72,18 +72,6 @@
         }],
  "nextobjectid":6,
  "orientation":"orthogonal",
- "properties":
-    {
-     "corpses":200,
-     "energy":50000,
-     "summons":"Skeleton,Soldier"
-    },
- "propertytypes":
-    {
-     "corpses":"int",
-     "energy":"int",
-     "summons":"string"
-    },
  "renderorder":"right-down",
  "tileheight":4,
  "tilesets":[
