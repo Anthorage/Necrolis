@@ -49,7 +49,21 @@ I'll give you enough energy and corpses to summon 2 more skeleton.
 --
 >Message Enemies
 Now you have 3 skeletons to battle the enemy forces.
-Exit the summoning mode (S) and select the three of them (keep left click pressed and drag the mouse)
+Exit the summoning mode (S) and select the three of them (keep left click pressed and drag the mouse).
 
-Wait for the enemy to appear, and kill them before they reach your land.
+Wait for the enemy to appear, and order them to attack (order them to move to the enemies position)
+(Units will fight automatically once they're close enough to an enemy unit)&
+>Message AlmostOver
+You were able to defeat the enemy warriors, but two of them are still on their way.
+With the energy and corpses you've gathered from the killed enemies, summon new skeletons and prepare for the final battle.
+
+(Press S to enter/exit summoning mode)
+(Skeletons cost 15 energy and 1 corpse)&
+>Message FinalBattle
+The enemies have arrived, select your skeletons and form them in a line to fight.
+
+(Left click+drag = Select)
+(Right click = Move)&
+>Message Victory
+CONGRATULATIONS. YOU HAVE CONQUERED THIS LAND.
 >End

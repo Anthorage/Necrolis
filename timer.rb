@@ -6,6 +6,15 @@ class SimpleTimer
         @paused = state
     end
 
+    def paused?
+        return @paused
+    end
+
+    def set_time(t)
+        @time = t
+        @max_time = t
+    end
+
     def stop!
         self.pause
         @time = @max_time

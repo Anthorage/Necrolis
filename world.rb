@@ -12,107 +12,7 @@ require_relative 'textsystem'
 require_relative 'spacehash'
 
 require_relative 'missile'
-
-UnitWave = Struct.new(:unit_id, :length)
-
-
-class WaveSystem
-    INNER_WAVE_TIME = 0.25
-
-    def update(dt)
-
-        if !@started && @start_timer.update(dt)
-            @started = true
-        end
-
-        if @started
-            if @timer.update(dt)
-                @wid += 1
-                @timer.pause()
-                @unit_timer.pause(false)
-
-                if @wid >= @waves.size
-                    @timer.stop!
-                    @unit_timer.stop!
-                end
-
-            elsif @unit_timer.update(dt)
-                what = @waves[@wid][@wave_sector]
-                
-                un = @world.create_unit( @x, @y, what.unit_id, @player )
-                un.set_main_path(@tx, @ty)
-                un.travel(@tx, @ty)
-
-                @sector_counter +=1
-
-                if @sector_counter >= what.length
-                    @sector_counter = 0
-                    @wave_sector += 1
-                    
-                    if @wave_sector >= @waves[@wid].size
-                        @wave_sector = 0
-                        @timer.pause(false)
-                        @unit_timer.pause(true)
-                    end
-                end
-            end
-        end
-    end
-
-    def wait!
-        @timer.pause()
-        @unit_timer.pause()
-        @start_timer.pause()
-    end
-
-    def resume!
-        @timer.pause(false)
-        @unit_timer.pause(false)
-        @start_timer.pause(false)
-    end
-
-    def summon!
-        if @wid < @waves.size
-            @timer.pause(false)
-            @unit_timer.pause(false)
-            @start_timer.pause(false)
-        else
-            @timer.stop!
-            @unit_timer.stop!
-            @start_timer.stop!
-        end
-    end
-
-    def set_target(tx, ty)
-        @tx = tx
-        @ty = ty
-    end
-
-    def initialize(x, y, player, startin, waves, wave_time, world)
-        @wid = 0
-        @waves = waves
-        @x = x
-        @y = y
-
-        @tx = x
-        @ty = y
-
-        @wave_sector = 0
-        @sector_counter = 0
-        @world = world
-
-        @wave_finished = false
-        @started = false
-
-        @player = player
-
-        @paused = true
-        @timer = SimpleTimer.new(wave_time, true, false)
-        @unit_timer = SimpleTimer.new(INNER_WAVE_TIME, true, false)
-        @start_timer = SimpleTimer.new(startin, false, false)
-    end
-
-end
+require_relative 'wavesystem'
 
 class World
     attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
@@ -264,6 +164,8 @@ class World
         @missile_texture = nil
         @world_texture = nil
         @space_hash = nil
+
+        UnitGroup.clear
 
         @victory = false
         @defeat = false

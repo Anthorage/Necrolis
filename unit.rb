@@ -3,6 +3,7 @@ require_relative 'unittype'
 require_relative 'player'
 
 require_relative 'draworder'
+require_relative 'unitgroup'
 
 
 class Unit < CollisionEntity
@@ -41,6 +42,14 @@ class Unit < CollisionEntity
             end
         end
 
+    end
+
+    def add_group(grp)
+        @groups.add?(grp)
+    end
+
+    def rem_group(grp)
+        @groups.delete(grp)
     end
 
     def clear_hash_pos
@@ -148,6 +157,7 @@ class Unit < CollisionEntity
     def die(killer)
         @stats.health = 0.0
         @home.unselect(self)
+        @groups.each {|g| g.rem(self)}
         @show_rect = false
         killer.player.energy += (@kind.energy_cost/2).to_i
         killer.player.corpses += @kind.corpses_cost
@@ -376,6 +386,7 @@ class Unit < CollisionEntity
         @mainx = x
         @mainy = y
 
+        @groups = Set.new()
         @z = ZOrder::UNITS
 
         @stats = UnitStats.new(@kind.stats)

@@ -34,14 +34,16 @@
                  "properties":
                     {
                      "w1":"Soldier:1",
-                     "w2":"Soldier:2",
+                     "w2":"Soldier:1",
+                     "w3":"Soldier:2",
                      "wave_time":30,
-                     "waves":2
+                     "waves":3
                     },
                  "propertytypes":
                     {
                      "w1":"string",
                      "w2":"string",
+                     "w3":"string",
                      "wave_time":"float",
                      "waves":"int"
                     },
