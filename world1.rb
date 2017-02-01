@@ -53,7 +53,7 @@ class World1 < World
             self.set_message("Summon")
         elsif @state == 3
             self.set_message("Orders")
-            @adv_timer.pause
+            @adv_timer.pause()
             @adv_timer.set_time(5.0)
         elsif @state == 4
             self.set_message("MoreSummoning")
@@ -72,6 +72,7 @@ class World1 < World
             @adv_timer.set_time(4.0)
             self.set_message("Victory")
         elsif @state == 9
+            @adv_timer.pause()
             @victory = true
         end
 

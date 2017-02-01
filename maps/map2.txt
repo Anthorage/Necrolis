@@ -1,0 +1,6 @@
+>Begin
+>Message Start
+Now you can summon zombies
+>Message Victory
+The enemy have been defeated, well done reaper.
+>End
