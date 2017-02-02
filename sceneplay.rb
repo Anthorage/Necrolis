@@ -2,6 +2,8 @@ require_relative 'scene'
 require_relative 'world1'
 require_relative 'world2'
 
+require_relative 'musicplayer'
+
 class ScenePlay < Scene
     ENERGY_SUMMON_BASE = 25
     START_AT = 1
@@ -115,6 +117,7 @@ class ScenePlay < Scene
             @world.clear unless @world==nil
             @world = @worlds[@current_world]
             @world.load()
+            MusicMaster.get.play()
         end
     end
 

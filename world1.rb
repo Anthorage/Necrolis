@@ -86,7 +86,7 @@ class World1 < World
         @wavesys = self.create_wave_system(reg, PlayerMaster::P2, 1.0, targ.centerx, targ.centery)
 
         @state = 0
-        @adv_timer = SimpleTimer.new(2, true)
+        @adv_timer = SimpleTimer.new(20, true)
 
         self.set_message("Start")
     end
