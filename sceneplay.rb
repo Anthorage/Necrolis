@@ -1,8 +1,10 @@
 require_relative 'scene'
 require_relative 'world1'
+require_relative 'world2'
 
 class ScenePlay < Scene
     ENERGY_SUMMON_BASE = 25
+    START_AT = 1
 
     def can_use_energy?
         return PlayerMaster.PLAYER_1.energy > ENERGY_SUMMON_BASE
@@ -34,9 +36,14 @@ class ScenePlay < Scene
 
         if @selected_summon != nil
             if bt == Gosu::Kb1
-                @selected_summon = UnitMaster.get.bring(@world.get_summon_by_pos(0))
+                id = @world.get_summon_by_pos(0)
+                @selected_summon = UnitMaster.get.bring(id) if id != nil
             elsif bt == Gosu::Kb2
-                @selected_summon = UnitMaster.get.bring(@world.get_summon_by_pos(1))
+                id = @world.get_summon_by_pos(1)
+                @selected_summon = UnitMaster.get.bring(id) if id != nil
+            elsif bt == Gosu::Kb3
+                id = @world.get_summon_by_pos(2)
+                @selected_summon = UnitMaster.get.bring(id) if id != nil
             end
         end
     end
@@ -75,6 +82,7 @@ class ScenePlay < Scene
         end
 
         @world.restart() if @world.lost?
+        self.next_level() if @world.won?
     end
 
     def draw
@@ -96,6 +104,24 @@ class ScenePlay < Scene
 
     end
 
+    def set_level(id)
+
+        @current_world = id
+
+        if @current_world >= @worlds.size
+            puts "Victory"
+            @game.end_game
+        else
+            @world.clear unless @world==nil
+            @world = @worlds[@current_world]
+            @world.load()
+        end
+    end
+
+    def next_level
+        self.set_level(@current_world+1)
+    end
+
     def initialize(game)
         super "PLAY", game
 
@@ -103,13 +129,20 @@ class ScenePlay < Scene
         MissileMaster.get.setup()
         UnitMaster.get.setup()
         
-        @world = World1.new("Coward's Reign", "map1.json", "map1.txt", self)
-        @world.load()
+        @current_world = 0
+        
+        @world = nil
+        world1 = World1.new("Clooksan", "map1.json", "map1.txt", self)
+        world2 = World2.new("Blanhis", "map2.json", "map2.txt", self)
+        @worlds = [world1, world2]
+
         @time_mult = 1.00
         @slowed = false
         @selected_summon = nil
 
         @scenefont = Gosu::Font.new(24)
+
+        self.set_level(START_AT)
     end
 
 end

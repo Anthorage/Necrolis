@@ -114,6 +114,14 @@ class UnitMaster
         return nil
     end
 
+    def energy_cost(who)
+        bring(who).energy_cost
+    end
+
+    def corpses_cost(who)
+        bring(who).corpses_cost
+    end
+
     def self.get
         @@myself ||= UnitMaster.new()
 

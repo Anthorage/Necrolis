@@ -360,7 +360,7 @@ class World
                     end
                 elsif name == "units"
                     lay['objects'].each do |obj|
-                        self.create_unit( obj['name'], (obj['x']+0.5) * (@tile_sx/@graph_sx), ( (obj['y']+0.5) * (@tile_sy/@graph_sy))-1, obj['gid']-1, obj['properties'].fetch("player", PlayerMaster.P1), obj['properties'] )
+                        self.create_unit((obj['x']+0.5) * (@tile_sx/@graph_sx), ( (obj['y']+0.5) * (@tile_sy/@graph_sy))-1, obj['gid']-1, obj['properties'].fetch("player", PlayerMaster::P1), obj['properties'] )
                     end
                 end
                 

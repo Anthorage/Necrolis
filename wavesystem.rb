@@ -72,8 +72,12 @@ class WaveSystem
         end
     end
 
+    def total_waves
+        return @waves.size
+    end
+
     def finished?
-        return @wid >= @waves.size
+        return @wid >= @waves.size && finished_summoning?
     end
 
     def finished_summoning?
@@ -82,6 +86,10 @@ class WaveSystem
 
     def group_empty?
         return @group.size <= 0
+    end
+
+    def wave_over?
+        return @wave_finished && @group.size <= 0
     end
 
     def waiting?

@@ -100,8 +100,8 @@
                      "w2":"Soldier:1,Archer:1",
                      "w3":"Soldier:2,Archer:1",
                      "w4":"Soldier:1,Archer:2",
-                     "w5":"Soldier:4",
-                     "wave_time":30,
+                     "w5":"Soldier:2,Archer:2",
+                     "wave_time":26,
                      "waves":5
                     },
                  "propertytypes":
