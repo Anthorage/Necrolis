@@ -24,7 +24,7 @@ class World2 < World
         elsif @state == 4
             self.next_text() if @wavesys.wave_number == @wavesys.total_waves-1
         elsif @state == 5
-            if @wavesys.wave_number == @wavesys.total_waves
+            if @wavesys.finished? #@wavesys.wave_number == @wavesys.total_waves &&  @wavesys.group_empty?
                 self.next_text()
             end
         end
@@ -62,7 +62,7 @@ class World2 < World
         @wavesys = self.create_wave_system(reg, PlayerMaster::P2, 10.0, targ.centerx, targ.centery)
 
         @state = -1
-        @adv_timer = SimpleTimer.new(2, true)
+        @adv_timer = SimpleTimer.new(25, true)
 
         self.add_summon( UnitMaster::SKELETON )
         self.add_summon( UnitMaster::ZOMBIE )

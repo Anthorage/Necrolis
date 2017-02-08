@@ -36,7 +36,7 @@ class Missile < CollisionEntity
 
                             if @hits <= 0
                                 @dead = true
-                                break
+                                return
                             end
                         end
                     end

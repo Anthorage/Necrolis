@@ -7,9 +7,17 @@ class UnitGroup
         @units.size
     end
 
+    def empty?
+        return @units.empty?
+    end
+
     def add(who)
         @units.add?(who)
         who.add_group(self)
+    end
+
+    def add_units(who)
+        who.each {|w| self.add(w)}
     end
 
     def rem(who)

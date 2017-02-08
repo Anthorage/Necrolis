@@ -14,8 +14,11 @@ require_relative 'spacehash'
 require_relative 'missile'
 require_relative 'wavesystem'
 
+require_relative 'effect'
+
 class World
-    attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
+    attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :effect_texture, 
+    :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
 
     DEAD_LAND = 1
     TEXT_RECT_COLOR = Gosu::Color.new(192, 96, 64, 64)
@@ -131,6 +134,11 @@ class World
                 u.update(dt) unless u.is_dead?
                 u.is_dead?
             end
+
+            @effects.delete_if do |u|
+                u.update(dt) unless u.is_dead?
+                u.is_dead?
+            end
         end
     end
 
@@ -141,6 +149,7 @@ class World
 
                 @units.each { |u| u.draw }
                 @missiles.each { |m| m.draw }
+                @effects.each { |e| e.draw }
                 #@space_hash.draw
             }
 
@@ -164,6 +173,7 @@ class World
         @missile_texture = nil
         @world_texture = nil
         @space_hash = nil
+        @effects = nil
 
         UnitGroup.clear
 
@@ -220,6 +230,14 @@ class World
         return mis
     end
 
+    def create_effect(x,y,kind,target=nil)
+        eff = Effect.new(x,y,kind,self)
+        eff.attach(target)
+        @effects.push(eff)
+
+        return eff
+    end
+
     def summonable_pos?(x,y)
         xp = (x/@tile_sx).to_i
         yp = (y/@tile_sy).to_i
@@ -271,6 +289,33 @@ class World
         self.show_message
     end
 
+    def get_player_units(pid)
+        ret = []
+        @units.each do |u|
+            ret.push(u) if u.player.id == pid
+        end
+
+        return ret
+    end
+
+    def get_units_of_type(utype)
+        ret = []
+        @units.each do |u|
+            ret.push(u) if u.kind.id==utype
+        end
+
+        return ret
+    end
+
+    def get_player_units_of_type(pid, utype)
+        ret = []
+        @units.each do |u|
+            ret.push(u) if u.player.id == pid && u.kind.id==utype
+        end
+
+        return ret
+    end
+
     def load
         fplace = Dir.pwd
         fplace = File.expand_path("maps/", fplace)
@@ -286,6 +331,8 @@ class World
 
         @missiles = []
         @units = []
+        @effects = []
+
         @regions = {}
 
         @summon_list = []
@@ -308,12 +355,15 @@ class World
         gph = File.expand_path("graphics/", Dir.pwd)
         utl = File.expand_path("units.png", gph)
         mtl = File.expand_path("missiles.png", gph)
+        etl = File.expand_path("effects.png", gph)
 
         @tileset = Gosu::Image.load_tiles( File.expand_path("tileset.png", gph), @graph_sx, @graph_sy, :retro=>true )
 
         @unit_texture = Gosu::Image.load_tiles(utl, @graph_sx, @graph_sy, :retro=>true )
 
         @missile_texture = Gosu::Image.load_tiles(mtl, @graph_sx, @graph_sy, :retro=>true)
+
+        @effect_texture = Gosu::Image.load_tiles(etl, @graph_sx, @graph_sy, :retro=>true)
 
         @unit_image_width = Gosu::Image.new( utl ).width
 

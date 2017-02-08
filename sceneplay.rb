@@ -1,12 +1,13 @@
 require_relative 'scene'
 require_relative 'world1'
 require_relative 'world2'
+require_relative 'world3'
 
 require_relative 'musicplayer'
 
 class ScenePlay < Scene
     ENERGY_SUMMON_BASE = 25
-    START_AT = 1
+    START_AT = 2
 
     def can_use_energy?
         return PlayerMaster.PLAYER_1.energy > ENERGY_SUMMON_BASE
@@ -131,13 +132,15 @@ class ScenePlay < Scene
         PlayerMaster.get.setup()
         MissileMaster.get.setup()
         UnitMaster.get.setup()
+        EffectMaster.get.setup()
         
         @current_world = 0
         
         @world = nil
         world1 = World1.new("Clooksan", "map1.json", "map1.txt", self)
         world2 = World2.new("Blanhis", "map2.json", "map2.txt", self)
-        @worlds = [world1, world2]
+        world3 = World3.new("Mulahay", "map3.json", "map3.txt", self)
+        @worlds = [world1, world2, world3]
 
         @time_mult = 1.00
         @slowed = false
