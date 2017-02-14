@@ -159,8 +159,18 @@ class Unit < CollisionEntity
         @home.unselect(self)
         @groups.each {|g| g.rem(self)}
         @show_rect = false
-        killer.player.energy += (@kind.energy_cost/2).to_i
-        killer.player.corpses += @kind.corpses_cost
+        @mykiller = killer
+
+        if killer != nil
+            if killer.instance_of?(Unit) then
+                killer.player.energy += (@kind.energy_cost/2).to_i
+                killer.player.corpses += @kind.corpses_cost
+            else
+                killer.energy += (@kind.energy_cost/2).to_i
+                killer.corpses += @kind.corpses_cost
+            end
+        end
+
         self.clear_hash_pos
     end
 

@@ -18,7 +18,7 @@ require_relative 'effect'
 
 class World
     attr_reader :tile_sx, :tile_sy, :tile_sqx, :tile_sqy, :zoom_x, :zoom_y, :graph_sx, :graph_sy, :effect_texture, 
-    :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash
+    :missile_texture, :unit_texture, :units, :camerax, :cameray, :selected, :space_hash, :scene
 
     DEAD_LAND = 1
     TEXT_RECT_COLOR = Gosu::Color.new(192, 96, 64, 64)
@@ -117,6 +117,28 @@ class World
         elsif Gosu::button_down?(Gosu::KbDown)
             self.move_camera(0, @tile_sy*speed*dt)
         end
+    end
+
+    def any_unit_xy?(x,y)
+        @units.each do |u|
+            if u.contains?(x,y)
+                return u
+            end
+        end
+
+        return nil
+    end
+
+    def any_player_unit_xy?(x,y,player)
+        id = player.instance_of?(Player) ? player.id : player
+
+        @units.each do |u|
+            if u.contains?(x,y) && u.player.id == id
+                return u
+            end
+        end
+
+        return nil
     end
 
     def update(dt)
@@ -267,7 +289,7 @@ class World
     end
 
     def add_summon(who)
-        @summon_list.push(who) if !@summon_list.include?(who)
+        @summon_list.push(who) unless @summon_list.include?(who)
     end
 
     def rem_summon(who)
@@ -280,6 +302,22 @@ class World
 
     def can_summon?(who)
         return @summon_list.include?(who)
+    end
+
+    def can_cast?(what)
+        return @spell_list.include?(what)
+    end
+
+    def get_spell_by_pos(key)
+        return @spell_list.size > key ? @spell_list[key] : nil
+    end
+
+    def rem_spell(what)
+        @spell_list.delete(what)
+    end
+
+    def add_spell(what)
+        @spell_list.push(what) unless @spell_list.include?(who)
     end
 
     def load_texts()
@@ -336,6 +374,7 @@ class World
         @regions = {}
 
         @summon_list = []
+        @spell_list = []
 
         @selected = Set.new()
         @textsystem = TextSystem.new()
@@ -491,6 +530,8 @@ class World
         @defeat = false
 
         @summon_list = nil
+        @spell_list = nil
+
         @energy_timer = SimpleTimer.new(1.0, true)
 
         @wave_systems = nil

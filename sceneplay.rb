@@ -7,7 +7,7 @@ require_relative 'musicplayer'
 
 class ScenePlay < Scene
     ENERGY_SUMMON_BASE = 25
-    START_AT = 2
+    START_AT = 0
 
     def can_use_energy?
         return PlayerMaster.PLAYER_1.energy > ENERGY_SUMMON_BASE
@@ -16,6 +16,12 @@ class ScenePlay < Scene
     def button_down(bt)
         if bt == Gosu::MsLeft
             @world.unselect_all()
+
+            if @selected_spell != nil
+                res = true
+
+                @selected_spell.on_cast(@world.camerax+@game.mouse_x, @world.cameray+@game.mouse_y,PlayerMaster.PLAYER_1)
+            end
         elsif bt == Gosu::MsRight
             @world.selected.each {|u| u.travel(@world.camerax+@game.mouse_x, @world.cameray+@game.mouse_y)}
         elsif bt == Gosu::KbEscape
@@ -74,6 +80,10 @@ class ScenePlay < Scene
                     @world.select(newun)
                 end
             end
+        elsif @selected_spell != nil
+            if !@world.can_summon?(@selected_spell)
+                @selected_spell = nil
+            end
         else
             if Gosu::button_down?(Gosu::MsLeft)
                 @world.units.each do |u|
@@ -103,6 +113,8 @@ class ScenePlay < Scene
 
         if @selected_summon != nil
             @world.unit_texture[ @selected_summon.graphid ].draw_rot( @game.mouse_x, @game.mouse_y, ZOrder::SUMMONS, 0, 0.5, 0.5, @world.zoom_x, @world.zoom_y )
+        elsif @selected_spell != nil
+            @world.spell_texture[ @selected_spell.graphic ].draw_rot( @game.mouse_x, @game.mouse_y, ZOrder::SUMMONS, 0, 0.5, 0.5, @world.zoom_x, @world.zoom_y )
         end
 
     end
@@ -145,6 +157,7 @@ class ScenePlay < Scene
         @time_mult = 1.00
         @slowed = false
         @selected_summon = nil
+        @selected_spell = nil
 
         @scenefont = Gosu::Font.new(24)
 
